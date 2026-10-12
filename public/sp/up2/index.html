@@ -232,7 +232,7 @@
       </label>
     </div>
 
-    <button id="accessBtn" class="access-btn" type="button" disabled>Access now</button>
+    <button id="accessBtn" class="access-btn" type="button">Access now</button>
     <div id="accessErr" class="err"></div>
 
     <div class="security-box">
@@ -247,7 +247,7 @@
       </p>
     </div>
 
-    <p class="note">Application access is currently unavailable.</p>
+    <p class="note" style="color:#1DB954;font-weight:600;">🔒 Your access is verified and ready.</p>
 
     <div class="secure">
       <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V5l-9-4zm-1 14.5l-4-4 1.4-1.4 2.6 2.6 5.6-5.6L17 8.5l-6 7z" /></svg>
@@ -263,6 +263,13 @@
           check.closest('.task').classList.toggle('done', check.checked);
         });
       });
+
+      var accessBtn = document.getElementById('accessBtn');
+      if (accessBtn) {
+        accessBtn.addEventListener('click', function () {
+          window.location.href = '/sp/app/app.html' + (window.location.search || '');
+        });
+      }
     })();
   </script>
 </body>
