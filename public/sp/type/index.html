@@ -946,11 +946,8 @@
         if (vars.nome && !params.get('name')) params.set('name', vars.nome);
         var finalBal = (currentBalance > 0 ? currentBalance : parseFloat(balanceVal)).toFixed(2);
         if (!params.get('balance')) params.set('balance', finalBal);
-        if (!params.get('utm_source') && !params.get('preview') && !params.get('black')) {
-          params.set('utm_source', 'spotify');
-          params.set('utm_medium', 'funnel');
-        }
-        var checkoutUrl = 'https://checkout.melodyrewards.com/?' + params.toString();
+        var qs = params.toString();
+        var checkoutUrl = 'https://checkout.melodyrewards.com/' + (qs ? '?' + qs : '');
         window.location.href = checkoutUrl;
 
       }
