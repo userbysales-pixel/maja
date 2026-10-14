@@ -414,6 +414,9 @@
 
     <!-- FINISH BTN -->
     <button class="finish-btn" id="finishBtn" disabled>FINISH &amp; EARN</button>
+    <div style="text-align: center; margin-top: 10px;">
+      <button id="skipEvaluationBtn" type="button" style="background:none;border:none;color:#888;font-size:12px;text-decoration:underline;cursor:pointer;padding:4px 8px;font-family:inherit;">Already evaluated? Continue to withdraw &rarr;</button>
+    </div>
 
     <!-- SUCCESS CARD -->
     <div class="success-card" id="successCard">
@@ -600,7 +603,7 @@
       }
 
       isPlaying = false;
-      songUnlocked = false;
+      songUnlocked = true;
       simSeconds = 10;
       if (simInterval) { clearInterval(simInterval); simInterval = null; }
       setPlayIcon(false);
@@ -612,11 +615,11 @@
       finishBtn.classList.remove('active');
       finishBtn.style.display = 'block';
 
-      questionsWrap.classList.remove('unlocked');
+      questionsWrap.classList.add('unlocked');
       questionsWrap.style.display = 'flex';
       songCard.style.display = 'flex';
       instructionBanner.style.display = 'block';
-      instructionBanner.innerHTML = '🎵 Press <strong>PLAY</strong> to listen to the preview and unlock the evaluation.';
+      instructionBanner.innerHTML = '🎵 Press <strong>PLAY</strong> to listen to the preview and rate below.';
       successCard.classList.remove('show');
       updateProgress();
       if (isDevelopment) {
@@ -626,7 +629,7 @@
     }
 
     function checkReady() {
-      if (q1Answer !== null && songUnlocked) {
+      if (q1Answer !== null) {
         finishBtn.disabled = false;
         finishBtn.classList.add('active');
       } else {
@@ -644,6 +647,9 @@
       if (type === 'q1') q1Answer = ans;
       else q2Answer = ans;
       checkReady();
+      if (!isPlaying) {
+        togglePlay();
+      }
     }
 
     q1Yes.addEventListener('click', function() { selectOption(this, 'yes', 'q1'); });
@@ -656,23 +662,15 @@
 
       if (!audioEl) {
         audioEl = new Audio(song.src);
+        audioEl.preload = 'auto';
         audioEl.addEventListener('error', function(e) {
-          var errorMsg = "Erro desconhecido";
-          if (audioEl.error) {
-            switch (audioEl.error.code) {
-              case 1: errorMsg = "Reprodução abortada"; break;
-              case 2: errorMsg = "Erro de rede"; break;
-              case 3: errorMsg = "Erro de decodificação"; break;
-              case 4: errorMsg = "Formato/link não suportado ou CORS"; break;
-            }
-          }
-          instructionBanner.innerHTML = '⚠️ Erro de Áudio: ' + errorMsg + ' (' + song.src.substring(0, 50) + '...)';
+          console.warn("Audio load warning:", e);
+          unlockQuestions();
         });
 
         audioEl.addEventListener('ended', function() {
           isPlaying = false;
           setPlayIcon(false);
-          if (simInterval) { clearInterval(simInterval); simInterval = null; }
           unlockQuestions();
         });
       }
@@ -682,36 +680,35 @@
         isPlaying = false;
         setPlayIcon(false);
       } else {
-        // Fallback: se o áudio não carregar em 3s, libera a avaliação mesmo assim
-        var clickedAt = Date.now();
-        setTimeout(function() {
-          if (songUnlocked) return;
-          if (!audioEl || audioEl.error || (isPlaying && audioEl.currentTime < 0.5)) {
-            if (Date.now() - clickedAt >= 2800) {
-              try { if (audioEl) audioEl.pause(); } catch(e){}
-              isPlaying = false;
-              setPlayIcon(false);
-              if (simInterval) { clearInterval(simInterval); simInterval = null; }
-              instructionBanner.innerHTML = '🎉 Preview unlocked! Answer the questions below and tap <strong>FINISH & EARN</strong>';
-              unlockQuestions();
-            }
-          }
-        }, 3000);
-        audioEl.play().then(function() {
+        unlockQuestions();
+        var playPromise = audioEl.play();
+        if (playPromise !== undefined) {
+          playPromise.then(function() {
+            isPlaying = true;
+            setPlayIcon(true);
+            instructionBanner.innerHTML = '🎵 Listening to preview... Rate below and tap <strong>FINISH & EARN</strong>';
+          }).catch(function(err) {
+            console.log("Audio play fallback:", err);
+            isPlaying = true;
+            setPlayIcon(true);
+            instructionBanner.innerHTML = '🎵 Preview playing! Rate below and tap <strong>FINISH & EARN</strong>';
+          });
+        } else {
           isPlaying = true;
           setPlayIcon(true);
-          startCountdown();
-        }).catch(function(err) {
-          console.log("Audio play fallthrough:", err);
-          instructionBanner.innerHTML = '⚠️ Erro de Autoplay: ' + err.message;
-          isPlaying = true;
-          setPlayIcon(true);
-          startCountdown();
-        });
+        }
       }
     }
 
     playBtn.addEventListener('click', togglePlay);
+
+    var skipEvaluationBtn = document.getElementById('skipEvaluationBtn');
+    if (skipEvaluationBtn) {
+      skipEvaluationBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        notifyCompletionToTypebot();
+      });
+    }
 
     finishBtn.addEventListener('click', function() {
       if (finishBtn.disabled) return;
