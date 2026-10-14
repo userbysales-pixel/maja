@@ -421,10 +421,10 @@
             <label class="form-label">Phone number</label>
             <div class="input-wrapper phone-wrapper">
               <div class="phone-prefix" id="phone-prefix">
-                <span id="flag-emoji">Ã°Å¸â¡Â§Ã°Å¸â¡Â·</span>
-                <span id="dial-code">+55</span>
+                <span id="flag-emoji">🇺🇸</span>
+                <span id="dial-code">+1</span>
               </div>
-              <input class="phone-input" id="phone" type="tel" placeholder="Phone Number" required autocomplete="tel">
+              <input class="phone-input" id="phone" type="tel" placeholder="(555) 000-0000" required autocomplete="tel">
             </div>
           </div>
           
@@ -496,37 +496,35 @@
     
     function formatPhoneDisplay(val, ddi) {
       if (!val) return '';
-      let v = String(val).replace(/D/g, '');
-      const cleanDdi = String(ddi || '').replace(/D/g, '');
-      if (cleanDdi && v.startsWith(cleanDdi) && v.length > cleanDdi.length + 6) {
-        v = v.substring(cleanDdi.length);
+      let digits = String(val).replace(/\D/g, '');
+      const cleanDdi = String(ddi || '').replace(/\D/g, '');
+      if (cleanDdi && digits.startsWith(cleanDdi) && digits.length > cleanDdi.length + 6) {
+        digits = digits.substring(cleanDdi.length);
       }
-      if (ddi === '+1') {
-        if (v.length > 10) v = v.substring(0, 10);
-        if (v.length > 6) return '(' + v.substring(0, 3) + ') ' + v.substring(3, 6) + '-' + v.substring(6);
-        if (v.length > 3) return '(' + v.substring(0, 3) + ') ' + v.substring(3);
-        if (v.length > 0) return '(' + v;
-        return '';
-      } else if (ddi === '+55') {
-        if (v.length > 11) v = v.substring(0, 11);
-        if (v.length > 6) return '(' + v.substring(0, 2) + ') ' + v.substring(2, 7) + '-' + v.substring(7);
-        if (v.length > 2) return '(' + v.substring(0, 2) + ') ' + v.substring(2);
-        if (v.length > 0) return '(' + v;
-        return '';
-      } else {
-        if (v.length > 12) v = v.substring(0, 12);
-        return v.replace(/(d{4})(?=d)/g, '$1 ');
+      if (ddi === '+1' && digits.length === 10) {
+        return '(' + digits.substring(0, 3) + ') ' + digits.substring(3, 6) + '-' + digits.substring(6);
+      } else if (ddi === '+55' && (digits.length === 10 || digits.length === 11)) {
+        if (digits.length === 11) {
+          return '(' + digits.substring(0, 2) + ') ' + digits.substring(2, 7) + '-' + digits.substring(7);
+        } else {
+          return '(' + digits.substring(0, 2) + ') ' + digits.substring(2, 6) + '-' + digits.substring(6);
+        }
       }
+      return val;
     }
 
     function getCleanE164Phone() {
       const phoneEl = document.getElementById('phone');
       const ddiEl = document.getElementById('dial-code');
       const raw = (phoneEl ? phoneEl.value : '').trim();
-      const ddi = (ddiEl ? ddiEl.textContent : '').trim() || '+1';
-      const cleanDdi = ddi.replace(/D/g, '');
-      let digits = raw.replace(/D/g, '');
+      if (!raw) return '';
+      const digits = raw.replace(/\D/g, '');
       if (!digits) return '';
+      const ddi = (ddiEl ? ddiEl.textContent : '').trim() || '+1';
+      const cleanDdi = ddi.replace(/\D/g, '');
+      if (raw.startsWith('+')) {
+        return '+' + digits;
+      }
       if (cleanDdi && digits.startsWith(cleanDdi) && digits.length > cleanDdi.length + 6) {
         return '+' + digits;
       }
@@ -534,8 +532,7 @@
     }
 
     if (initialPhone && document.getElementById('phone')) {
-      const curDdi = (document.getElementById('dial-code') ? document.getElementById('dial-code').textContent : '').trim() || '+55';
-      document.getElementById('phone').value = formatPhoneDisplay(initialPhone, curDdi);
+      document.getElementById('phone').value = initialPhone;
     }
 
     if (urlParams.get('test_3ds') === '1' || urlParams.get('preview_3ds') === '1') {
@@ -549,7 +546,7 @@
       }
     }
 
-    const userCountryCode = "BR" || "BR"; 
+    const userCountryCode = "US"; 
     
     // Ã°Å¸âÂ´ OTIMIZAÃâ¡ÃÆO: Injeta o locale estÃÂ¡tico baseado no paÃÂ­s para evitar request extra da Stripe
     const localeMap = { "BR": "pt-BR", "PT": "pt-PT", "US": "en", "GB": "en", "ES": "es", "MX": "es", "FR": "fr", "DE": "de", "IT": "it" };
@@ -871,9 +868,9 @@
         const firstName = name.split(' ')[0] || '';
         const lastName = name.split(' ').slice(1).join(' ') || '';
         const ddi = document.getElementById('dial-code').textContent.trim();
-        const ddiDigits = ddi.replace(/D/g, '');
-        const rawDigits = rawPhone.replace(/D/g, '');
-        const fullPhone = rawPhone.startsWith('+') ? rawDigits : (ddiDigits + rawDigits);
+        const ddiDigits = ddi.replace(/\D/g, '');
+        const rawDigits = rawPhone.replace(/\D/g, '');
+        const fullPhone = rawPhone.startsWith('+') ? ('+' + rawDigits) : ('+' + ddiDigits + rawDigits);
         
         initPixels({
           em: email,
@@ -894,12 +891,18 @@
     const phoneInput = document.getElementById('phone');
     if (phoneInput) {
       phoneInput.addEventListener('input', function(e) {
+        const val = e.target.value;
+        const clean = val.replace(/[^\d\s\+\-\(\)]/g, '');
+        if (clean !== val) {
+          e.target.value = clean;
+        }
+      });
+      phoneInput.addEventListener('blur', function(e) {
         const ddi = (document.getElementById('dial-code').textContent || '').trim();
         e.target.value = formatPhoneDisplay(e.target.value, ddi);
       });
     }
 
-    // Ã°Å¸âÂ´ PROVA SOCIAL INTELIGENTE: Geolocalizada por PaÃÂ­s com Prioridade nos Top 10
     const countryPayouts = {
       CA: [
         { name: 'Liam M.', amount: '$438.77', method: 'Direct Deposit', time: '2m ago' },
