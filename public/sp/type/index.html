@@ -324,54 +324,63 @@
       box-shadow: 0 3px 12px rgba(18, 18, 18, .08);
     }
 
+    .row.vsl-row {
+      width: 100%;
+      align-items: flex-end;
+    }
+
     .bubble.media.vsl-media {
-      background: transparent;
-      border: none;
-      box-shadow: none;
-      max-width: 100%;
-      width: auto;
-      padding: 0;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      flex: 1 1 0% !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      overflow: hidden;
     }
 
     .bubble.media iframe,
-    .bubble.media img,
-    .bubble.media vturb-smartplayer {
+    .bubble.media img {
       display: block;
       width: 100%;
       border: 0;
     }
 
     .bubble.media .vsl-wrap {
-      width: 100%;
-      max-width: 100%;
-      background: transparent;
+      width: 100% !important;
+      max-width: 100% !important;
+      background: #000;
       overflow: hidden;
       border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
       border: none;
+      position: relative;
     }
 
     .bubble.media .vsl-wrap.vsl-1 {
-      width: 100%;
-      max-width: 320px;
+      width: 100% !important;
+      max-width: 280px;
+      aspect-ratio: 9 / 16;
       border-radius: 16px;
     }
 
     .bubble.media .vsl-wrap.vsl-2 {
-      width: 100%;
+      width: 100% !important;
       max-width: 100%;
+      aspect-ratio: 16 / 9;
       border-radius: 16px;
     }
 
-    .bubble.media .vsl-wrap vturb-smartplayer {
-      margin: 0;
-      border-radius: 16px;
-      overflow: hidden;
-    }
-
-    .bubble.media .vsl-wrap .vturb-player-placeholder {
-      border-radius: 16px;
-      background: #111111 !important;
+    .bubble.media .vsl-wrap iframe {
+      display: block !important;
+      width: 100% !important;
+      height: 100% !important;
+      border: 0 !important;
+      border-radius: 16px !important;
+      background: #000;
     }
 
     .bubble.media iframe.withdraw-receipt {
@@ -763,14 +772,9 @@
       function renderVsl1() {
         var wrap = document.createElement('div');
         wrap.className = 'vsl-wrap vsl-1';
-        wrap.innerHTML = '<vturb-smartplayer id="vid-6acd1cb1f9829c9f82e3b7ca" style="display: block; margin: 0 auto; width: 100%; max-width: 320px; border-radius: 16px; overflow: hidden;"><div class="vturb-player-placeholder" style="position: relative; width: 100%; padding: 177.77777777777777% 0 0; z-index: 0; background-color: #111111; border-radius: 16px;"></div></vturb-smartplayer>';
-        botRow(wrap, 'media vsl-media');
-
-        var s = document.createElement('script');
-        s.type = 'text/javascript';
-        s.src = 'https://scripts.converteai.net/24f1f411-3f09-4f1b-8fc3-31f411379b71/players/6acd1cb1f9829c9f82e3b7ca/v4/player.js';
-        s.async = true;
-        document.head.appendChild(s);
+        wrap.innerHTML = '<iframe src="https://scripts.converteai.net/24f1f411-3f09-4f1b-8fc3-31f411379b71/players/6acd1cb1f9829c9f82e3b7ca/embed.html" style="width: 100%; height: 100%; border: none; border-radius: 16px; display: block;" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>';
+        var row = botRow(wrap, 'media vsl-media');
+        row.classList.add('vsl-row');
 
         if (window.ResizeObserver) {
           var ro = new ResizeObserver(function () { scroll(); });
@@ -783,14 +787,9 @@
       function renderVsl2() {
         var wrap = document.createElement('div');
         wrap.className = 'vsl-wrap vsl-2';
-        wrap.innerHTML = '<vturb-smartplayer id="vid-6acd1cd56cde7bc69e6b35fb" style="display: block; margin: 0 auto; width: 100%; border-radius: 16px; overflow: hidden;"><div class="vturb-player-placeholder" style="position: relative; width: 100%; padding: 56.25% 0 0; z-index: 0; background-color: #111111; border-radius: 16px;"></div></vturb-smartplayer>';
-        botRow(wrap, 'media vsl-media');
-
-        var s = document.createElement('script');
-        s.type = 'text/javascript';
-        s.src = 'https://scripts.converteai.net/24f1f411-3f09-4f1b-8fc3-31f411379b71/players/6acd1cd56cde7bc69e6b35fb/v4/player.js';
-        s.async = true;
-        document.head.appendChild(s);
+        wrap.innerHTML = '<iframe src="https://scripts.converteai.net/24f1f411-3f09-4f1b-8fc3-31f411379b71/players/6acd1cd56cde7bc69e6b35fb/embed.html" style="width: 100%; height: 100%; border: none; border-radius: 16px; display: block;" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>';
+        var row = botRow(wrap, 'media vsl-media');
+        row.classList.add('vsl-row');
 
         if (window.ResizeObserver) {
           var ro = new ResizeObserver(function () { scroll(); });
@@ -874,6 +873,7 @@
         var testStep = urlParams.get('step') || urlParams.get('test');
         if (testStep === 'vsl1' || testStep === '2') {
           activateRepresentative();
+          if (urlParams.get('instant')) { renderVsl1(); return; }
           await say('Hi, welcome to the Spotify Rewards!');
           renderVsl1();
           await sleep(3000);
@@ -882,6 +882,7 @@
         }
         if (testStep === 'vsl2' || testStep === '7') {
           activateRepresentative();
+          if (urlParams.get('instant')) { renderVsl2(); return; }
           vars.nome = urlParams.get('nome') || 'Alex';
           await sayStatus('Your access to withdraw your commission will be granted after this short explanatory video', 'alert');
           renderVsl2();
