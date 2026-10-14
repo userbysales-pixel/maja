@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Spotify Rewards – Central de Visualização</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-transparent text-[var(--foreground)] antialiased p-4">
+
+  <div class="bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] rounded-2xl shadow-xl overflow-hidden max-w-6xl mx-auto">
+    
+    <!-- Top Header -->
+    <div class="p-6 border-b border-[var(--border)] bg-gradient-to-r from-emerald-950/40 via-[var(--card)] to-[var(--card)] flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-[#1DB954]/20 border border-[#1DB954]/40 flex items-center justify-center text-[#1DB954]">
+          <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24">
+            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl font-bold tracking-tight">Spotify Rewards – Hub de Visualização</h1>
+            <span class="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Em Produção
+            </span>
+          </div>
+          <p class="text-sm text-[var(--muted-foreground)]">Acesse, simule e teste cada etapa do funil e do aplicativo.</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a href="https://melodyrewards.com" target="_blank" rel="noopener" class="text-xs px-3 py-2 rounded-lg bg-[#1DB954] hover:bg-[#1aa34a] text-black font-semibold transition-colors flex items-center gap-1.5">
+          <span>Abrir Produção</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs / Controls -->
+    <div class="px-6 py-3 border-b border-[var(--border)] bg-[var(--card)] flex flex-wrap items-center justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-1.5" id="navTabs">
+        <button onclick="switchView('funnel')" id="tab-funnel" class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#1DB954] text-black transition-all">
+          1. Funil Principal (VSL 1 & 2)
+        </button>
+        <button onclick="switchView('checkout')" id="tab-checkout" class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)] transition-all">
+          2. Checkout Seguro
+        </button>
+        <button onclick="switchView('up1')" id="tab-up1" class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)] transition-all">
+          3. Upsell 1 (1-Click)
+        </button>
+        <button onclick="switchView('up2')" id="tab-up2" class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)] transition-all">
+          4. Upsell 2 (Confirmação)
+        </button>
+        <button onclick="switchView('app')" id="tab-app" class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--accent)] transition-all">
+          5. App de Recompensas
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div class="flex items-center bg-[var(--background)] p-1 rounded-lg border border-[var(--border)] text-xs">
+          <button onclick="setDevice('mobile')" id="btn-mobile" class="px-2.5 py-1 rounded-md font-medium bg-[var(--card)] text-[var(--foreground)] shadow-sm">
+            📱 Mobile
+          </button>
+          <button onclick="setDevice('desktop')" id="btn-desktop" class="px-2.5 py-1 rounded-md font-medium text-[var(--muted-foreground)]">
+            💻 Desktop
+          </button>
+        </div>
+        <a id="currentDirectLink" href="https://melodyrewards.com" target="_blank" rel="noopener" class="p-1.5 rounded-lg border border-[var(--border)] hover:bg-[var(--accent)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors" title="Abrir em nova aba">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Active URL Bar -->
+    <div class="px-6 py-2 bg-[var(--background)]/60 border-b border-[var(--border)] flex items-center justify-between text-xs text-[var(--muted-foreground)]">
+      <div class="flex items-center gap-2 truncate">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span class="font-mono text-[var(--foreground)]" id="urlDisplay">https://melodyrewards.com</span>
+      </div>
+      <div class="flex items-center gap-3 shrink-0">
+        <span class="hidden sm:inline">Servidor Local: <a href="http://127.0.0.1:3000" target="_blank" class="text-emerald-400 hover:underline">127.0.0.1:3000</a></span>
+        <button onclick="reloadPreview()" class="hover:text-[var(--foreground)] flex items-center gap-1 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+          Recarregar
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Preview Display Area -->
+    <div class="p-6 bg-neutral-950/70 flex justify-center items-center min-h-[640px]">
+      <div id="deviceContainer" class="w-[390px] h-[720px] transition-all duration-300 rounded-3xl overflow-hidden border-4 border-neutral-800 shadow-2xl relative bg-black flex flex-col">
+        
+        <!-- Mobile Notch / Top Bar -->
+        <div id="deviceHeader" class="h-6 bg-neutral-900 flex items-center justify-between px-6 text-[11px] text-neutral-400 select-none shrink-0 border-b border-neutral-800">
+          <span>9:41</span>
+          <div class="w-16 h-3.5 bg-black rounded-full"></div>
+          <div class="flex items-center gap-1.5">
+            <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.28 19.64 10.6 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9z"/></svg>
+            <div class="w-4 h-2 rounded-sm border border-neutral-400 flex items-center p-0.5"><div class="w-full h-full bg-neutral-400 rounded-2xs"></div></div>
+          </div>
+        </div>
+
+        <!-- The Live Iframe -->
+        <iframe id="previewIframe" src="http://127.0.0.1:3000/sp/type/index.html" class="w-full flex-1 border-0 bg-black" allow="autoplay; fullscreen; encrypted-media; picture-in-picture"></iframe>
+
+      </div>
+    </div>
+
+    <!-- Funnel Architecture & Quick Links Grid -->
+    <div class="p-6 border-t border-[var(--border)] bg-[var(--card)]">
+      <h3 class="text-sm font-semibold mb-3 text-[var(--foreground)]">Fluxo Completo do Funil & Endpoints em Produção:</h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs">
+        
+        <!-- Step 1 -->
+        <div class="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--background)] flex flex-col justify-between">
+          <div>
+            <span class="text-[#1DB954] font-bold">1. QUIZ + VSLs</span>
+            <p class="text-[var(--muted-foreground)] mt-1">Presell interativo com VSL 1 (vertical) e VSL 2 (horizontal).</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--border)]">
+            <a href="https://melodyrewards.com" target="_blank" class="text-emerald-400 hover:underline font-mono truncate block">melodyrewards.com</a>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--background)] flex flex-col justify-between">
+          <div>
+            <span class="text-blue-400 font-bold">2. CHECKOUT</span>
+            <p class="text-[var(--muted-foreground)] mt-1">Stripe Checkout com Apple Pay, Google Pay e cartão.</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--border)]">
+            <a href="https://checkout.melodyrewards.com/" target="_blank" class="text-blue-400 hover:underline font-mono truncate block">checkout.melodyrewards.com</a>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--background)] flex flex-col justify-between">
+          <div>
+            <span class="text-amber-400 font-bold">3. UPSELL 1</span>
+            <p class="text-[var(--muted-foreground)] mt-1">1-Click Upsell automático cobrado via Stripe API.</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--border)]">
+            <a href="https://up1.melodyrewards.com" target="_blank" class="text-amber-400 hover:underline font-mono truncate block">up1.melodyrewards.com</a>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--background)] flex flex-col justify-between">
+          <div>
+            <span class="text-purple-400 font-bold">4. UPSELL 2</span>
+            <p class="text-[var(--muted-foreground)] mt-1">Confirmação de acesso e verificação de segurança 3DS.</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--border)]">
+            <a href="https://up2.melodyrewards.com" target="_blank" class="text-purple-400 hover:underline font-mono truncate block">up2.melodyrewards.com</a>
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--background)] flex flex-col justify-between">
+          <div>
+            <span class="text-emerald-400 font-bold">5. APP FINAL</span>
+            <p class="text-[var(--muted-foreground)] mt-1">Player de músicas do Spotify e módulo de saques.</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--border)]">
+            <a href="https://up2.melodyrewards.com/sp/app/app.html" target="_blank" class="text-emerald-400 hover:underline font-mono truncate block">up2.../app.html</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Integrated Technologies Badges -->
+      <div class="mt-4 pt-4 border-t border-[var(--border)] flex flex-wrap items-center justify-between text-xs text-[var(--muted-foreground)] gap-2">
+        <div class="flex items-center gap-3">
+          <span>Rastreamento Utmify: <b class="text-emerald-400 font-mono">6acd2b9b7d3c1a9effa6f733</b></span>
+          <span>•</span>
+          <span>Stripe Live: <b class="text-blue-400">Ativa</b></span>
+          <span>•</span>
+          <span>Cloudflare Edge: <b class="text-emerald-400">5 Domínios Conectados</b></span>
+        </div>
+        <div>
+          GitHub: <a href="https://github.com/userbysales-pixel/maja" target="_blank" class="text-[var(--foreground)] hover:underline">userbysales-pixel/maja (main)</a>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    const VIEWS = {
+      funnel: {
+        prodUrl: 'https://melodyrewards.com',
+        localUrl: 'http://127.0.0.1:3000/sp/type/index.html',
+        name: 'Funil Principal (Quiz + VSL 1 & 2)'
+      },
+      checkout: {
+        prodUrl: 'https://checkout.melodyrewards.com/',
+        localUrl: 'https://checkout.melodyrewards.com/',
+        name: 'Checkout Seguro Stripe'
+      },
+      up1: {
+        prodUrl: 'https://up1.melodyrewards.com',
+        localUrl: 'http://127.0.0.1:3000/sp/up1/index.html',
+        name: 'Upsell 1 (1-Click Upsell)'
+      },
+      up2: {
+        prodUrl: 'https://up2.melodyrewards.com',
+        localUrl: 'http://127.0.0.1:3000/sp/up2/index.html',
+        name: 'Upsell 2 (Confirmação de Acesso)'
+      },
+      app: {
+        prodUrl: 'https://up2.melodyrewards.com/sp/app/app.html',
+        localUrl: 'http://127.0.0.1:3000/sp/app/app.html',
+        name: 'App Spotify Rewards'
+      }
+    };
+
+    let currentKey = 'funnel';
+
+    function switchView(key) {
+      currentKey = key;
+      const view = VIEWS[key];
+      const iframe = document.getElementById('previewIframe');
+      const urlDisplay = document.getElementById('urlDisplay');
+      const directLink = document.getElementById('currentDirectLink');
+
+      iframe.src = view.localUrl;
+      urlDisplay.textContent = view.prodUrl;
+      directLink.href = view.prodUrl;
+
+      // Update Tab styling
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-[#1DB954]', 'text-black', 'font-semibold');
+        btn.classList.add('text-[var(--muted-foreground)]', 'font-medium');
+      });
+      const activeTab = document.getElementById('tab-' + key);
+      if (activeTab) {
+        activeTab.classList.remove('text-[var(--muted-foreground)]', 'font-medium');
+        activeTab.classList.add('bg-[#1DB954]', 'text-black', 'font-semibold');
+      }
+    }
+
+    function setDevice(type) {
+      const container = document.getElementById('deviceContainer');
+      const header = document.getElementById('deviceHeader');
+      const btnMobile = document.getElementById('btn-mobile');
+      const btnDesktop = document.getElementById('btn-desktop');
+
+      if (type === 'mobile') {
+        container.className = 'w-[390px] h-[720px] transition-all duration-300 rounded-3xl overflow-hidden border-4 border-neutral-800 shadow-2xl relative bg-black flex flex-col';
+        header.style.display = 'flex';
+        btnMobile.className = 'px-2.5 py-1 rounded-md font-medium bg-[var(--card)] text-[var(--foreground)] shadow-sm';
+        btnDesktop.className = 'px-2.5 py-1 rounded-md font-medium text-[var(--muted-foreground)]';
+      } else {
+        container.className = 'w-full h-[660px] transition-all duration-300 rounded-xl overflow-hidden border border-neutral-800 shadow-2xl relative bg-black flex flex-col';
+        header.style.display = 'none';
+        btnDesktop.className = 'px-2.5 py-1 rounded-md font-medium bg-[var(--card)] text-[var(--foreground)] shadow-sm';
+        btnMobile.className = 'px-2.5 py-1 rounded-md font-medium text-[var(--muted-foreground)]';
+      }
+    }
+
+    function reloadPreview() {
+      const iframe = document.getElementById('previewIframe');
+      iframe.src = iframe.src;
+    }
+  </script>
+
+</body>
+</html>

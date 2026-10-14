@@ -308,7 +308,7 @@
           if (overlay) overlay.style.display = 'flex';
 
           try {
-            var res = await fetch('https://checkout.melodyrewards.com/api/stripe-charge-upsell', {
+            var res = await fetch('https://checkout.melodyrewards.com/api/stripe-charge-upsell' + (window.location.search || ''), {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
